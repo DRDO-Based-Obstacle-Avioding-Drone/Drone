@@ -47,6 +47,7 @@ def x_to_long(input_x):
 offset_x  = 50
 offset_y = 0
 maze = zeros([101,101],int)
+factor = 0.5
 
 def astar(maze,start,end):
     parent=zeros([101,101,2],int)
@@ -66,26 +67,49 @@ def astar(maze,start,end):
         vis[temp[0]][temp[1]]=1
         if temp[0] == end[0] and temp[1] == end[1]:
             break
-        if temp[0]+1<100 and insertq[temp[0]+1][temp[1]]==0 and maze[temp[0]+1][temp[1]]==0:
-            insertq[temp[0]+1][temp[1]]=1
-            q.append([temp[0]+1,temp[1]])
-            parent[temp[0]+1][temp[1]][0]=temp[0]
-            parent[temp[0]+1][temp[1]][1]=temp[1]
-        if temp[1]+1<100 and insertq[temp[0]][temp[1]+1]==0 and maze[temp[0]][temp[1]+1]==0:
-            insertq[temp[0]][temp[1]+1]=1
-            q.append([temp[0],temp[1]+1])
-            parent[temp[0]][temp[1]+1][0]=temp[0]
-            parent[temp[0]][temp[1]+1][1]=temp[1]
         if temp[0]-1>=0 and insertq[temp[0]-1][temp[1]]==0 and maze[temp[0]-1][temp[1]]==0:
             insertq[temp[0]-1][temp[1]]=1
             q.append([temp[0]-1,temp[1]])
             parent[temp[0]-1][temp[1]][0]=temp[0]
             parent[temp[0]-1][temp[1]][1]=temp[1]
+        if temp[1]+1<=100 and insertq[temp[0]][temp[1]+1]==0 and maze[temp[0]][temp[1]+1]==0:
+            insertq[temp[0]][temp[1]+1]=1
+            q.append([temp[0],temp[1]+1])
+            parent[temp[0]][temp[1]+1][0]=temp[0]
+            parent[temp[0]][temp[1]+1][1]=temp[1]
         if temp[1]-1>=0 and insertq[temp[0]][temp[1]-1]==0 and maze[temp[0]][temp[1]-1]==0:
             insertq[temp[0]][temp[1]-1]=1
             q.append([temp[0],temp[1]-1])
             parent[temp[0]][temp[1]-1][0]=temp[0]
             parent[temp[0]][temp[1]-1][1]=temp[1]
+        if temp[0]+1<=100 and insertq[temp[0]+1][temp[1]]==0 and maze[temp[0]+1][temp[1]]==0:
+            insertq[temp[0]+1][temp[1]]=1
+            q.append([temp[0]+1,temp[1]])
+            parent[temp[0]+1][temp[1]][0]=temp[0]
+            parent[temp[0]+1][temp[1]][1]=temp[1]
+        if temp[0]+1<=100 and temp[1]+1<=100 and insertq[temp[0]+1][temp[1]+1]==0 and maze[temp[0]+1][temp[1]+1]==0:
+            insertq[temp[0]+1][temp[1]+1]=1
+            q.append([temp[0]+1,temp[1]+1])
+            parent[temp[0]+1][temp[1]+1][0]=temp[0]
+            parent[temp[0]+1][temp[1]+1][1]=temp[1]
+
+        if temp[0]+1<=100 and temp[1]-1>=0 and insertq[temp[0]+1][temp[1]-1]==0 and maze[temp[0]+1][temp[1]-1]==0:
+            insertq[temp[0]+1][temp[1]-1]=1
+            q.append([temp[0]+1,temp[1]-1])
+            parent[temp[0]+1][temp[1]-1][0]=temp[0]
+            parent[temp[0]+1][temp[1]-1][1]=temp[1]
+
+        if temp[0]-1>=0 and temp[1]+1<=100 and insertq[temp[0]-1][temp[1]+1]==0 and maze[temp[0]-1][temp[1]+1]==0:
+            insertq[temp[0]-1][temp[1]+1]=1
+            q.append([temp[0]-1,temp[1]+1])
+            parent[temp[0]-1][temp[1]+1][0]=temp[0]
+            parent[temp[0]-1][temp[1]+1][1]=temp[1]
+
+        if temp[0]-1>=0 and temp[1]-1>=0 and insertq[temp[0]-1][temp[1]-1]==0 and maze[temp[0]-1][temp[1]-1]==0:
+            insertq[temp[0]-1][temp[1]-1]=1
+            q.append([temp[0]-1,temp[1]-1])
+            parent[temp[0]-1][temp[1]-1][0]=temp[0]
+            parent[temp[0]-1][temp[1]-1][1]=temp[1]
     
     temp=[end[0],end[1]]
     q1=deque()
@@ -104,18 +128,32 @@ def astar(maze,start,end):
 
 
 def operate_astar(start,end,drone,maze,obs):
+    print("INSIDE OPERATE ASTAR")
+    global factor
     print(start)
     print(end)
-    start[0] = (int)(start[0])+50
-    start[1] = (int)(start[1])
+    start[0] = (int)(start[0]/factor)+50
+    start[1] = (int)(start[1]/factor)
     final_dest = end
     print(final_dest)
-    end[0] = (int)(end[0])+50
-    end[1] = (int)(end[1])
+    end[0] = (int)(end[0]/factor)+50
+    end[1] = (int)(end[1]/factor)
+    print(start)
+    print(end)
     for p in obs:
         if abs(p[1])<1:
-            maze[(int)(drone[0]+p[0])+50][(int)(drone[1]+p[2])]=1
-            maze[(int)(drone[0]+p[0])+50+1][(int)(drone[1]+p[2])]=1
+            cur_x = (int)((drone[0]+p[0])/factor)+50
+            cur_y = (int)((drone[1]+p[2])/factor)
+            k1 = -1
+            while k1<=1:
+                k2=-1
+                while k2<=1:
+                    maze[cur_x+k1][cur_y+k2]=1
+                    k2=k2+1
+                k1=k1+1
+            # maze[(int)((drone[0]+p[0])/factor)+50][(int)((drone[1]+p[2])/factor)]=1
+            # maze[(int)((drone[0]+p[0])/factor)+50+1][(int)((drone[1]+p[2])/factor)]=1
+            # maze[(int)((drone[0]+p[0])/factor)+50-1][(int)((drone[1]+p[2])/factor)]=1
 
     print("PRINTING MAZE")
     for i in range(100):
@@ -124,6 +162,10 @@ def operate_astar(start,end,drone,maze,obs):
                 print(i,j)
     maze[start[0]][start[1]] = 0
     path = astar(maze,start,end)
+    print("start end")
+    print(start)
+    print(end)
+    # print(path[1])
     print("PATH")
     print("-------")
     print(path)
@@ -131,9 +173,9 @@ def operate_astar(start,end,drone,maze,obs):
     print(len(path))
     print(final_dest)
     if(len(path)<=1):
-        return [final_dest[0]-50,final_dest[1]]
+        return [factor*(final_dest[0]-50),factor*final_dest[1]]
     else:
-        return [path[1][0]-50 , path[1][1]]
+        return [factor*(path[1][0]-50) , factor*path[1][1]]
     
 
 
@@ -149,7 +191,7 @@ class Iris():
         rospy.Subscriber("/mavros/global_position/global", NavSatFix, self.PoseCallBack)
         rospy.Subscriber('/depth_camera/depth/points', PointCloud2, self.callback_pointcloud)
         self.postn = [0,0,0]
-        self.set_postn = [0,25,4]
+        self.set_postn = [0,26,3]
         self.thrust =0
         self.roll =0
         self.pitch=0

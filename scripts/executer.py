@@ -24,7 +24,7 @@ args = parser.parse_args()
 print 'Connecting to vehicle on: %s' % args.connect
 vehicle = connect(args.connect, baud=57600, wait_ready=True)
 rospy.init_node('attitude_controller')
-hght = 4
+hght = 3
 latd = -35.3632591
 longd =  149.1653452
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
 # # Close vehicle object
 # vehicle.close()
-    arm_and_takeoff(4)
+    arm_and_takeoff(3)
     print("Setting airspeed")
     vehicle.airspeed = 3
     cur_lat = 0
